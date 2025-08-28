@@ -1,0 +1,84 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+.python-version
+
+# Testing / Coverage
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+nosetests.xml
+junit.xml
+htmlcov/
+.tox/
+.nox/
+
+# Caches
+.cache/
+.ipynb_checkpoints/
+
+# Logs
+*.log
+logs/
+
+# Editors / IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node / Frontend (in case of future additions)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.eslintcache
+.parcel-cache/
+.turbo/
+coverage/
+dist/
+
+# n8n local runtime/config (if present)
+.n8n/
+
+# Docker
+*.pid
+*.seed
+docker-data/
+
+
