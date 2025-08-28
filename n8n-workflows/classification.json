@@ -1,0 +1,38 @@
+{
+  "name": "Ticket Classification",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { priority: 'normal', category: 'general' } }];"
+      },
+      "id": "function1",
+      "name": "Set Defaults",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 200]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set Defaults",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
+
+

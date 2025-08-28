@@ -1,0 +1,47 @@
+{
+  "name": "Ticket Routing",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "webhook1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [200, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [],
+          "string": [
+            {
+              "value1": "={{$json[\"category\"]}}",
+              "operation": "contains",
+              "value2": "billing"
+            }
+          ]
+        }
+      },
+      "id": "if1",
+      "name": "Route Billing",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [450, 200]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Route Billing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
+
+
