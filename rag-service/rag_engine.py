@@ -1,21 +1,35 @@
 from __future__ import annotations
-
 from typing import Any, Dict, List, Tuple
-
 import numpy as np
-
 from vector_store import InMemoryVectorStore
 
+class SimpleEmbedder:
+    """Deterministic, lightweight embedder for demo puposes.
+    
+    Uses a seeded normal generator based on the text hash to produce a stable
+    psude-embedding, Not suitable for production.
+    """
+    def __init__(self, dimension: int = 384) -> None:
+        self.dimension = dimension
+
+from __future__ import annotations
+from typing import Any, Dict, List, Tuple
+import numpy as np
+from vector_store import InMemoryVectorStore
 
 class SimpleEmbedder:
     """Deterministic, lightweight embedder for demo purposes.
 
-    Uses a seeded normal generator based on the text hash to produce a stable
+    Uses a seeded normal generator based on the text hash to produce a stable 
     pseudo-embedding. Not suitable for production.
     """
-
     def __init__(self, dimension: int = 384) -> None:
         self.dimension = dimension
+
+    def embed(self, texts: List[str]) -> np.ndarray:
+        vectors: List[np.ndarray] = []
+        for text in texts:
+            seed = abs(hash(text)) % (2**32)
 
     def embed(self, texts: List[str]) -> np.ndarray:
         vectors: List[np.ndarray] = []
