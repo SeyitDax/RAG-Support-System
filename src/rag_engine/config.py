@@ -8,7 +8,7 @@ for all system components.
 import os
 from typing import Optional
 from pydantic import Field, field_validator, model_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -18,11 +18,13 @@ load_dotenv()
 class OpenAIConfig(BaseSettings):
     """OpenAI API configuration settings."""
     
-    api_key: str = Field(default="", env="OPENAI_API_KEY")
-    model: str = Field(default="gpt-4", env="OPENAI_MODEL")
-    embedding_model: str = Field(default="text-embedding-ada-002", env="OPENAI_EMBEDDING_MODEL")
-    max_tokens: int = Field(default=1000, env="OPENAI_MAX_TOKENS")
-    temperature: float = Field(default=0.3, env="OPENAI_TEMPERATURE")
+    api_key: str = Field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
+    model: str = Field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4"))
+    embedding_model: str = Field(default_factory=lambda: os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002"))
+    max_tokens: int = Field(default_factory=lambda: int(os.getenv("OPENAI_MAX_TOKENS", "1000")))
+    temperature: float = Field(default_factory=lambda: float(os.getenv("OPENAI_TEMPERATURE", "0.3")))
+    
+    model_config = SettingsConfigDict(extra="ignore")
     
     @field_validator("api_key")
     @classmethod
@@ -41,9 +43,11 @@ class OpenAIConfig(BaseSettings):
 class PineconeConfig(BaseSettings):
     """Pinecone vector database configuration settings."""
     
-    api_key: str = Field(default="", env="PINECONE_API_KEY")
-    index_name: str = Field(default="rag-support-system", env="PINECONE_INDEX_NAME")
-    dimension: int = Field(default=1536, env="PINECONE_DIMENSION")
+    api_key: str = Field(default_factory=lambda: os.getenv("PINECONE_API_KEY", ""))
+    index_name: str = Field(default_factory=lambda: os.getenv("PINECONE_INDEX_NAME", "rag-support-system"))
+    dimension: int = Field(default_factory=lambda: int(os.getenv("PINECONE_DIMENSION", "1536")))
+    
+    model_config = SettingsConfigDict(extra="ignore")
     
     @field_validator("api_key")
     @classmethod
@@ -69,6 +73,8 @@ class DatabaseConfig(BaseSettings):
     password: str = Field(default="", env="POSTGRES_PASSWORD")
     database: str = Field(default="rag_support_system", env="POSTGRES_DB")
     
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    
     @property
     def connection_string(self) -> str:
         """Generate database connection string."""
@@ -86,6 +92,8 @@ class RAGConfig(BaseSettings):
     confidence_threshold_low: float = Field(default=0.6, env="CONFIDENCE_THRESHOLD_LOW")
     max_search_results: int = Field(default=5, env="MAX_SEARCH_RESULTS")
     similarity_top_k: int = Field(default=3, env="SIMILARITY_TOP_K")
+    
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
     
     @field_validator("confidence_threshold_high")
     @classmethod
@@ -116,6 +124,8 @@ class FlaskConfig(BaseSettings):
     secret_key: str = Field(default="dev-secret-key", env="SECRET_KEY")
     host: str = Field(default="0.0.0.0", env="FLASK_HOST")
     port: int = Field(default=8000, env="FLASK_PORT")
+    
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 class BusinessConfig(BaseSettings):
@@ -124,12 +134,18 @@ class BusinessConfig(BaseSettings):
     auto_response_enabled: bool = Field(default=True, env="AUTO_RESPONSE_ENABLED")
     escalation_enabled: bool = Field(default=True, env="ESCALATION_ENABLED")
     conversation_history_enabled: bool = Field(default=True, env="CONVERSATION_HISTORY_ENABLED")
+    
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
 class Config:
     """Main configuration class that combines all settings."""
     
     def __init__(self):
+        # Load environment first
+        load_dotenv()
+        
+        # Then initialize settings
         self.openai = OpenAIConfig()
         self.pinecone = PineconeConfig()
         self.database = DatabaseConfig()
@@ -149,5 +165,15 @@ class Config:
             return False
 
 
-# Global configuration instance
-config = Config()
+# Global configuration instance - will be lazy-loaded
+_config = None
+
+def get_config():
+    """Get the global configuration instance."""
+    global _config
+    if _config is None:
+        _config = Config()
+    return _config
+
+# For backward compatibility
+config = get_config()
