@@ -6,9 +6,7 @@
 Creating an account is simple and takes just a few minutes. Visit our website and click the "Sign Up" button in the top right corner. You'll need to provide your email address, create a password, and verify your email. Once verified, you can start shopping immediately.
 
 ### Q2: I forgot my password. How can I reset it?
-Click the "Forgot Password" link on the login page. Enter your email address and we'll send you a password reset link. Check your email (including spam folder) and follow the instructions. If you don't receive the email within 10 minutes, contact customer support.
-
-### Q3: How do I update my account information?
+Click the "Forgot Password" link on the login page. Enter your email address and we'll send you a password reset link. Check your email (including spam/junk) and follow the instructions. If it doesn’t arrive after a few minutes, contact customer support. For your security, support will never ask for your password.### Q3: How do I update my account information?
 Log into your account and navigate to "My Profile" or "Account Settings." Here you can update your name, email address, phone number, and addresses. Remember to save your changes before leaving the page.
 
 ### Q4: Can I change my email address?
@@ -24,10 +22,9 @@ We accept all major credit cards (Visa, MasterCard, American Express, Discover),
 
 ### Q7: Can I modify or cancel my order?
 Orders can be modified or canceled within 1 hour of placement, provided they haven't entered the fulfillment process. Contact customer support immediately if you need to make changes. Once an order is being prepared for shipment, modifications may not be possible.
-
-### Q8: Do you offer payment plans or financing?
-Yes, we partner with several financing companies to offer flexible payment options. During checkout, select "Financing Options" to see available plans. Approval is typically instant, and you can spread payments over 3, 6, or 12 months.
-
+### Q7: Can I modify or cancel my order?
+Orders can be modified or canceled within 60 minutes of order confirmation, provided they haven’t entered fulfillment. Made-to-order or digital items may be ineligible once processing starts.
+Contact customer support immediately if you need to make changes. Once an order is being prepared for shipment, modifications may not be possible.
 ### Q9: Why was my payment declined?
 Payment declines can happen for several reasons: insufficient funds, incorrect billing information, security holds by your bank, or exceeded credit limits. Double-check your information and try again. Contact your bank if the problem persists.
 

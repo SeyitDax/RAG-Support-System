@@ -91,13 +91,12 @@ print(f'Ingested {result[\"total_chunks\"]} chunks from knowledge base')
 
 ### 4. Start the API Server
 ```bash
-# Start Flask development server
-python -m src.api.app
+# Start Flask development server (port 8000)
+export FLASK_APP=src.api.app:create_app  # or src.api.app:app if not using a factory
+flask run --host 0.0.0.0 --port 8000
 
-# API will be available at http://localhost:8000
-# Health check: http://localhost:8000/api/health
-```
-
+# Health check:
+# http://localhost:8000/api/health
 ### 5. Open Demo Interface
 ```bash
 # Open the demo interface in your browser
@@ -201,12 +200,6 @@ isort src/ tests/
 
 ### Development Server
 ```bash
-# Run with auto-reload
-export FLASK_ENV=development
-export FLASK_DEBUG=True
-python -m src.api.app
-```
-
 ## 🔌 n8n Integration
 
 The system includes pre-configured n8n workflows for:

@@ -7,7 +7,7 @@ in the RAG support system API.
 
 from datetime import datetime
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class QueryRequest(BaseModel):
@@ -18,7 +18,8 @@ class QueryRequest(BaseModel):
     user_id: Optional[str] = Field(default=None, description="Optional user identifier")
     session_id: Optional[str] = Field(default=None, description="Optional session identifier")
     
-    @validator("question")
+    @field_validator("question")
+    @classmethod
     def validate_question(cls, v):
         if not v.strip():
             raise ValueError("Question cannot be empty or only whitespace")
@@ -77,17 +78,17 @@ class IngestionRequest(BaseModel):
     source_name: Optional[str] = Field(default="manual_input", description="Source name for text content")
     document_type: Optional[str] = Field(default="general", description="Document type classification")
     
-    @validator("*", pre=True)
-    def validate_at_least_one_source(cls, v, values):
+    @model_validator(mode='after')
+    def validate_at_least_one_source(self):
         # Check that at least one source is provided
         sources = [
-            values.get("file_paths"),
-            values.get("directory_path"), 
-            values.get("text_content")
+            self.file_paths,
+            self.directory_path, 
+            self.text_content
         ]
         if not any(source for source in sources):
             raise ValueError("Must provide at least one of: file_paths, directory_path, or text_content")
-        return v
+        return self
 
 
 class IngestionResponse(BaseModel):
@@ -119,11 +120,11 @@ class AnalyticsRequest(BaseModel):
     metric_types: Optional[List[str]] = Field(default=None, description="Specific metrics to retrieve")
     user_id: Optional[str] = Field(default=None, description="Filter by user ID")
     
-    @validator("end_date")
-    def validate_date_range(cls, v, values):
-        if v and values.get("start_date") and v < values["start_date"]:
+    @model_validator(mode='after')
+    def validate_date_range(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
             raise ValueError("End date must be after start date")
-        return v
+        return self
 
 
 class MetricData(BaseModel):
@@ -186,9 +187,8 @@ class BusinessRules(BaseModel):
     escalation_enabled: bool = Field(default=True, description="Enable human escalation")
     max_query_length: int = Field(default=1000, description="Maximum query length")
     
-    @validator("confidence_threshold_low")
-    def validate_threshold_order(cls, v, values):
-        high_threshold = values.get("confidence_threshold_high")
-        if high_threshold and v >= high_threshold:
+    @model_validator(mode='after')
+    def validate_threshold_order(self):
+        if self.confidence_threshold_low >= self.confidence_threshold_high:
             raise ValueError("Low confidence threshold must be less than high threshold")
-        return v
+        return self

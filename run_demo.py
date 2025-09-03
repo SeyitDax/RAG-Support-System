@@ -33,19 +33,19 @@ logger = structlog.get_logger(__name__)
 def print_banner():
     """Print startup banner."""
     banner = """
-    ╔═══════════════════════════════════════════════════════════════╗
-    ║               🤖 RAG Customer Support System                 ║
-    ║                        Demo Startup                          ║
-    ╠═══════════════════════════════════════════════════════════════╣
-    ║  AI-Powered Customer Support with Confidence-Based Routing   ║
-    ║  OpenAI GPT-4 + Pinecone + Flask + n8n Integration         ║
-    ╚═══════════════════════════════════════════════════════════════╝
+    ===============================================================
+                   RAG Customer Support System                  
+                        Demo Startup                           
+    ===============================================================
+     AI-Powered Customer Support with Confidence-Based Routing  
+     OpenAI GPT-4 + Pinecone + Flask + n8n Integration        
+    ===============================================================
     """
     print(banner)
 
 def check_environment() -> Dict[str, bool]:
     """Check if required environment variables are set."""
-    print("🔍 Checking environment configuration...")
+    print("Checking environment configuration...")
     
     required_vars = [
         "OPENAI_API_KEY",
@@ -58,7 +58,7 @@ def check_environment() -> Dict[str, bool]:
         is_set = bool(value and value != f"your-{var.lower().replace('_', '-')}-here")
         env_status[var] = is_set
         
-        status = "✅" if is_set else "❌"
+        status = "[OK]" if is_set else "[MISSING]"
         print(f"  {status} {var}: {'Set' if is_set else 'Missing'}")
     
     return env_status
@@ -69,50 +69,50 @@ def create_env_file_if_missing():
     env_example = Path(".env.example")
     
     if not env_file.exists() and env_example.exists():
-        print("📝 Creating .env file from template...")
+        print("Creating .env file from template...")
         env_file.write_text(env_example.read_text())
-        print("✅ .env file created. Please edit it with your API keys.")
+        print("[OK] .env file created. Please edit it with your API keys.")
         return False
     elif not env_file.exists():
-        print("❌ No .env file found and no .env.example template available.")
+        print("[ERROR] No .env file found and no .env.example template available.")
         return False
     
     return True
 
 def initialize_knowledge_base() -> bool:
     """Initialize the knowledge base with documents."""
-    print("📚 Initializing knowledge base...")
+    print("Initializing knowledge base...")
     
     try:
         # Check if knowledge base directory exists
         kb_path = Path("data/knowledge_base")
         if not kb_path.exists() or not any(kb_path.glob("*.md")):
-            print("❌ Knowledge base directory not found or empty.")
+            print("[ERROR] Knowledge base directory not found or empty.")
             print(f"Expected path: {kb_path.absolute()}")
             return False
         
-        print("  🔄 Creating RAG engine...")
+        print("  Creating RAG engine...")
         rag_engine = RAGEngine()
         
-        print("  📄 Processing knowledge base documents...")
+        print("  Processing knowledge base documents...")
         result = rag_engine.ingest_directory(str(kb_path))
         
         if result.get("success", False):
             total_chunks = result.get("total_chunks", 0)
             processing_time = result.get("processing_time", 0)
-            print(f"  ✅ Successfully ingested {total_chunks} chunks in {processing_time:.2f}s")
+            print(f"  [OK] Successfully ingested {total_chunks} chunks in {processing_time:.2f}s")
             return True
         else:
-            print(f"  ❌ Failed to ingest knowledge base: {result.get('message', 'Unknown error')}")
+            print(f"  [ERROR] Failed to ingest knowledge base: {result.get('message', 'Unknown error')}")
             return False
             
     except Exception as e:
-        print(f"  ❌ Error initializing knowledge base: {e}")
+        print(f"  [ERROR] Error initializing knowledge base: {e}")
         return False
 
 def start_api_server():
     """Start the Flask API server."""
-    print("🚀 Starting API server...")
+    print("Starting API server...")
     
     try:
         app = create_app()
@@ -120,9 +120,9 @@ def start_api_server():
         host = config.flask.host
         port = config.flask.port
         
-        print(f"  📍 Server starting on http://{host}:{port}")
-        print(f"  🔗 API endpoints available at http://{host}:{port}/api/")
-        print(f"  💊 Health check: http://{host}:{port}/api/health")
+        print(f"  Server starting on http://{host}:{port}")
+        print(f"  API endpoints available at http://{host}:{port}/api/")
+        print(f"  Health check: http://{host}:{port}/api/health")
         
         # Start server
         app.run(
@@ -133,62 +133,62 @@ def start_api_server():
         )
         
     except Exception as e:
-        print(f"  ❌ Failed to start API server: {e}")
+        print(f"  [ERROR] Failed to start API server: {e}")
         return False
 
 def open_demo_interface():
     """Open the demo interface in the browser."""
-    print("🌐 Opening demo interface...")
+    print("Opening demo interface...")
     
     frontend_path = Path("frontend/index.html")
     if not frontend_path.exists():
-        print("❌ Demo interface not found at frontend/index.html")
+        print("[ERROR] Demo interface not found at frontend/index.html")
         return False
     
     try:
         # Open in browser
         webbrowser.open(f"file://{frontend_path.absolute()}")
-        print("  ✅ Demo interface opened in browser")
+        print("  [OK] Demo interface opened in browser")
         return True
     except Exception as e:
         print(f"  ⚠️  Could not auto-open browser: {e}")
-        print(f"  📁 Manually open: file://{frontend_path.absolute()}")
+        print(f"  Manually open: file://{frontend_path.absolute()}")
         return True
 
 def print_usage_info():
     """Print usage information and next steps."""
     print("""
-🎯 System Ready! Here's what you can do:
+System Ready! Here's what you can do:
 
-📋 Demo Interface:
-  • Chat interface with real-time confidence scoring
-  • Try example queries or ask your own questions
-  • View source attribution and processing times
+Demo Interface:
+  - Chat interface with real-time confidence scoring
+  - Try example queries or ask your own questions
+  - View source attribution and processing times
 
-🔧 API Endpoints:
-  • POST /api/query - Process customer questions
-  • GET /api/health - System health check  
-  • GET /api/analytics - Performance metrics
-  • GET /api/system/stats - System statistics
+API Endpoints:
+  - POST /api/query - Process customer questions
+  - GET /api/health - System health check  
+  - GET /api/analytics - Performance metrics
+  - GET /api/system/stats - System statistics
 
-🧪 Test Queries to Try:
-  • "How do I return a defective product?"
-  • "What shipping options do you offer?"
-  • "Is the iPhone 15 compatible with MagSafe?"
-  • "What is the meaning of life?" (out-of-scope test)
+Test Queries to Try:
+  - "How do I return a defective product?"
+  - "What shipping options do you offer?"
+  - "Is the iPhone 15 compatible with MagSafe?"
+  - "What is the meaning of life?" (out-of-scope test)
 
-📊 Business Logic:
-  • High confidence (>80%): Auto-response ✅
-  • Medium confidence (60-80%): Needs review 🔍
-  • Low confidence (<60%): Escalate to human 👤
+Business Logic:
+  - High confidence (>80%): Auto-response [OK]
+  - Medium confidence (60-80%): Needs review [REVIEW]
+  - Low confidence (<60%): Escalate to human [ESCALATE]
 
-⚙️ System Components:
-  • OpenAI GPT-4 for response generation
-  • Pinecone vector database for document search
-  • Flask REST API with comprehensive endpoints
-  • Professional frontend with real-time features
+System Components:
+  - OpenAI GPT-4 for response generation
+  - Pinecone vector database for document search
+  - Flask REST API with comprehensive endpoints
+  - Professional frontend with real-time features
 
-🛑 To Stop: Press Ctrl+C
+To Stop: Press Ctrl+C
     """)
 
 def main():
@@ -200,7 +200,7 @@ def main():
     env_status = check_environment()
     
     if not all(env_status.values()):
-        print("\n❌ Environment setup incomplete!")
+        print("\n[ERROR] Environment setup incomplete!")
         print("Please set your API keys in the .env file:")
         print("  1. Get OpenAI API key from https://platform.openai.com/api-keys")
         print("  2. Get Pinecone API key from https://www.pinecone.io/")
@@ -208,14 +208,20 @@ def main():
         print("  4. Run this script again")
         sys.exit(1)
     
-    print("✅ Environment configuration complete!")
+    print("[OK] Environment configuration complete!")
     
     # Initialize knowledge base
     kb_success = initialize_knowledge_base()
     if not kb_success:
-        print("\n⚠️  Knowledge base initialization failed!")
+        print("\n[WARNING] Knowledge base initialization failed!")
         print("The API will still start, but responses may be limited.")
-        print("You can try ingesting documents later via the /api/ingest endpoint.")
+        print("")
+        print("Common solutions:")
+        print("1. Check if your Pinecone API key is correct")
+        print("2. For free tier users, try updating PINECONE_ENVIRONMENT in .env to:")
+        print("   PINECONE_ENVIRONMENT=gcp-starter")
+        print("3. You can try ingesting documents later via the /api/ingest endpoint")
+        print("")
         input("Press Enter to continue anyway...")
     
     # Open demo interface (non-blocking)
@@ -228,7 +234,7 @@ def main():
     try:
         start_api_server()
     except KeyboardInterrupt:
-        print("\n\n👋 Shutting down RAG Customer Support System...")
+        print("\n\nShutting down RAG Customer Support System...")
         print("Thank you for trying the demo!")
         sys.exit(0)
 

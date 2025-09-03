@@ -7,7 +7,8 @@ for all system components.
 
 import os
 from typing import Optional
-from pydantic import BaseSettings, Field, validator
+from pydantic import Field, field_validator, model_validator
+from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -17,32 +18,46 @@ load_dotenv()
 class OpenAIConfig(BaseSettings):
     """OpenAI API configuration settings."""
     
-    api_key: str = Field(..., env="OPENAI_API_KEY")
+    api_key: str = Field(default="", env="OPENAI_API_KEY")
     model: str = Field(default="gpt-4", env="OPENAI_MODEL")
     embedding_model: str = Field(default="text-embedding-ada-002", env="OPENAI_EMBEDDING_MODEL")
     max_tokens: int = Field(default=1000, env="OPENAI_MAX_TOKENS")
     temperature: float = Field(default=0.3, env="OPENAI_TEMPERATURE")
     
-    @validator("api_key")
+    @field_validator("api_key")
+    @classmethod
     def validate_api_key(cls, v):
-        if not v or v == "sk-your-openai-api-key-here":
-            raise ValueError("OpenAI API key must be provided")
+        # Allow empty during import, validate when actually used
+        if v and v == "sk-your-openai-api-key-here":
+            raise ValueError("OpenAI API key placeholder must be replaced with real key")
         return v
+    
+    def validate_for_use(self):
+        """Validate config is ready for actual use."""
+        if not self.api_key or self.api_key == "sk-your-openai-api-key-here":
+            raise ValueError("OpenAI API key must be provided")
 
 
 class PineconeConfig(BaseSettings):
     """Pinecone vector database configuration settings."""
     
-    api_key: str = Field(..., env="PINECONE_API_KEY")
-    environment: str = Field(default="us-west1-gcp-free", env="PINECONE_ENVIRONMENT")
+    api_key: str = Field(default="", env="PINECONE_API_KEY")
+    environment: str = Field(default="gcp-starter", env="PINECONE_ENVIRONMENT")
     index_name: str = Field(default="rag-support-system", env="PINECONE_INDEX_NAME")
     dimension: int = Field(default=1536, env="PINECONE_DIMENSION")
     
-    @validator("api_key")
+    @field_validator("api_key")
+    @classmethod
     def validate_api_key(cls, v):
-        if not v or v == "your-pinecone-api-key-here":
-            raise ValueError("Pinecone API key must be provided")
+        # Allow empty during import, validate when actually used
+        if v and v == "your-pinecone-api-key-here":
+            raise ValueError("Pinecone API key placeholder must be replaced with real key")
         return v
+    
+    def validate_for_use(self):
+        """Validate config is ready for actual use."""
+        if not self.api_key or self.api_key == "your-pinecone-api-key-here":
+            raise ValueError("Pinecone API key must be provided")
 
 
 class DatabaseConfig(BaseSettings):
@@ -73,19 +88,25 @@ class RAGConfig(BaseSettings):
     max_search_results: int = Field(default=5, env="MAX_SEARCH_RESULTS")
     similarity_top_k: int = Field(default=3, env="SIMILARITY_TOP_K")
     
-    @validator("confidence_threshold_high")
+    @field_validator("confidence_threshold_high")
+    @classmethod
     def validate_high_threshold(cls, v):
         if not 0.0 <= v <= 1.0:
             raise ValueError("Confidence threshold must be between 0.0 and 1.0")
         return v
     
-    @validator("confidence_threshold_low")
-    def validate_low_threshold(cls, v, values):
+    @field_validator("confidence_threshold_low")
+    @classmethod
+    def validate_low_threshold(cls, v):
         if not 0.0 <= v <= 1.0:
             raise ValueError("Confidence threshold must be between 0.0 and 1.0")
-        if "confidence_threshold_high" in values and v >= values["confidence_threshold_high"]:
-            raise ValueError("Low confidence threshold must be less than high threshold")
         return v
+    
+    @model_validator(mode='after')
+    def validate_threshold_order(self):
+        if self.confidence_threshold_low >= self.confidence_threshold_high:
+            raise ValueError("Low confidence threshold must be less than high threshold")
+        return self
 
 
 class FlaskConfig(BaseSettings):
@@ -118,11 +139,11 @@ class Config:
         self.business = BusinessConfig()
     
     def validate(self) -> bool:
-        """Validate all configuration settings."""
+        """Validate all configuration settings for actual use."""
         try:
-            # Test that all required settings can be loaded
-            _ = self.openai.api_key
-            _ = self.pinecone.api_key
+            # Test that all required settings are properly configured
+            self.openai.validate_for_use()
+            self.pinecone.validate_for_use()
             return True
         except Exception as e:
             print(f"Configuration validation failed: {e}")

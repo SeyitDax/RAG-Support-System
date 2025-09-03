@@ -40,13 +40,21 @@ class PineconeVectorStore:
             if self.index_name not in existing_indexes:
                 logger.info("Creating new Pinecone index", index_name=self.index_name)
                 
+                # Determine cloud and region based on environment
+                if "gcp" in config.pinecone.environment:
+                    cloud = "gcp"
+                    region = "us-central1"
+                else:
+                    cloud = "aws" 
+                    region = "us-east-1"  # Free tier supported region
+                
                 self.pc.create_index(
                     name=self.index_name,
                     dimension=self.dimension,
                     metric="cosine",
                     spec=ServerlessSpec(
-                        cloud="aws",
-                        region="us-west-2"
+                        cloud=cloud,
+                        region=region
                     )
                 )
                 
@@ -59,8 +67,17 @@ class PineconeVectorStore:
                 logger.info("Using existing Pinecone index", index_name=self.index_name)
                 
         except Exception as e:
-            logger.error("Failed to ensure index exists", error=str(e))
-            raise
+            error_msg = str(e)
+            if "free plan does not support indexes" in error_msg:
+                logger.error("Pinecone free plan region error. Try updating PINECONE_ENVIRONMENT in .env file", error=error_msg)
+                raise Exception(
+                    "Pinecone region not supported by free plan. "
+                    "Please update PINECONE_ENVIRONMENT in your .env file to 'gcp-starter' "
+                    "or check Pinecone documentation for supported free tier regions."
+                )
+            else:
+                logger.error("Failed to ensure index exists", error=str(e))
+                raise
     
     def add_documents(self, 
                      embeddings: List[List[float]], 
