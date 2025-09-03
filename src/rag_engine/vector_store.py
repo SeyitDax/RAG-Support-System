@@ -40,22 +40,17 @@ class PineconeVectorStore:
             if self.index_name not in existing_indexes:
                 logger.info("Creating new Pinecone index", index_name=self.index_name)
                 
-                # Determine cloud and region based on environment
-                if "gcp" in config.pinecone.environment:
-                    cloud = "gcp"
-                    region = "us-central1"
-                else:
-                    cloud = "aws" 
-                    region = "us-east-1"  # Free tier supported region
-                
+                # Free tier only supports AWS us-east-1 region
                 self.pc.create_index(
                     name=self.index_name,
+                    vector_type="dense",  # Required for 2024 API
                     dimension=self.dimension,
                     metric="cosine",
                     spec=ServerlessSpec(
-                        cloud=cloud,
-                        region=region
-                    )
+                        cloud="aws",
+                        region="us-east-1"  # Only free tier supported region
+                    ),
+                    deletion_protection="disabled"  # Easier management for demos
                 )
                 
                 # Wait for index to be ready
@@ -67,17 +62,37 @@ class PineconeVectorStore:
                 logger.info("Using existing Pinecone index", index_name=self.index_name)
                 
         except Exception as e:
-            error_msg = str(e)
-            if "free plan does not support indexes" in error_msg:
-                logger.error("Pinecone free plan region error. Try updating PINECONE_ENVIRONMENT in .env file", error=error_msg)
+            error_msg = str(e).lower()
+            
+            # Provide specific guidance for common free tier errors
+            if "free plan does not support" in error_msg:
+                logger.error("Pinecone free tier limitation encountered", error=str(e))
                 raise Exception(
-                    "Pinecone region not supported by free plan. "
-                    "Please update PINECONE_ENVIRONMENT in your .env file to 'gcp-starter' "
-                    "or check Pinecone documentation for supported free tier regions."
+                    "Pinecone Free Tier Error: Your free plan only supports AWS us-east-1 region. "
+                    "This system is configured for free tier compatibility. "
+                    "Please check: 1) Your Pinecone API key is correct, 2) You have a valid free account, "
+                    "3) Restart this script to reload the updated configuration."
                 )
+            elif "invalid api key" in error_msg or "unauthorized" in error_msg:
+                logger.error("Pinecone authentication failed", error=str(e))
+                raise Exception(
+                    "Pinecone Authentication Error: Please check your PINECONE_API_KEY in the .env file. "
+                    "Get your API key from: https://app.pinecone.io/"
+                )
+            elif "quota" in error_msg or "limit" in error_msg:
+                logger.error("Pinecone quota exceeded", error=str(e))
+                raise Exception(
+                    "Pinecone Quota Error: You may have exceeded your free tier limits. "
+                    "Free tier allows 5 indexes. Check your Pinecone dashboard: https://app.pinecone.io/"
+                )
+            elif "already exists" in error_msg:
+                logger.warning("Index already exists, continuing with existing index", error=str(e))
+                # This is not actually an error, just use the existing index
+                pass
             else:
-                logger.error("Failed to ensure index exists", error=str(e))
-                raise
+                logger.error("Pinecone index creation failed", error=str(e))
+                raise Exception(f"Pinecone Error: {str(e)}")
+    
     
     def add_documents(self, 
                      embeddings: List[List[float]], 

@@ -42,7 +42,6 @@ class PineconeConfig(BaseSettings):
     """Pinecone vector database configuration settings."""
     
     api_key: str = Field(default="", env="PINECONE_API_KEY")
-    environment: str = Field(default="gcp-starter", env="PINECONE_ENVIRONMENT")
     index_name: str = Field(default="rag-support-system", env="PINECONE_INDEX_NAME")
     dimension: int = Field(default=1536, env="PINECONE_DIMENSION")
     

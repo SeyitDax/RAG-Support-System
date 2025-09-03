@@ -50,9 +50,27 @@ A production-ready AI-powered customer support system that automatically answers
 
 ### Prerequisites
 - Python 3.8+
-- OpenAI API key
-- Pinecone API key (free tier available)
+- **OpenAI API key** - Get from [platform.openai.com/api-keys](https://platform.openai.com/api-keys)
+- **Pinecone API key** - Get from [app.pinecone.io](https://app.pinecone.io/) (free tier available)
 - Git
+
+### 🆓 **Pinecone Free Tier Setup**
+This system is optimized for Pinecone's free tier:
+
+**Free Tier Includes:**
+- 5 serverless indexes in AWS us-east-1 region
+- Up to 2GB storage
+- No credit card required
+
+**Account Setup:**
+1. Sign up at [app.pinecone.io](https://app.pinecone.io/)
+2. Create an API key from the dashboard
+3. **Important**: Free tier only supports AWS us-east-1 region (automatically configured)
+
+**Common Issues:**
+- ❌ "Region not supported by free plan" → System is pre-configured for free tier
+- ❌ "Authentication failed" → Check your API key in .env file
+- ❌ "Quota exceeded" → Free tier allows 5 indexes max
 
 ### 1. Clone and Setup
 ```bash
@@ -276,6 +294,63 @@ All configuration through environment variables:
 - Comprehensive docstrings
 - Unit test coverage >80%
 - Structured logging throughout
+
+## 🔧 Troubleshooting
+
+### Common Pinecone Issues
+
+**Error: "Region not supported by free plan"**
+```bash
+# Solution: The system is configured for free tier (us-east-1)
+# 1. Restart the Python script completely to reload updated code
+# 2. Verify your Pinecone API key is correct
+# 3. Ensure you have a valid free tier account
+```
+
+**Error: "Authentication failed" or "Invalid API key"**
+```bash
+# Solution:
+# 1. Check PINECONE_API_KEY in your .env file
+# 2. Get your API key from https://app.pinecone.io/
+# 3. Ensure no extra spaces or characters in the key
+```
+
+**Error: "Quota exceeded" or "Index limit reached"**
+```bash
+# Solution:
+# 1. Free tier allows 5 indexes maximum
+# 2. Check your Pinecone dashboard: https://app.pinecone.io/
+# 3. Delete unused indexes if needed
+```
+
+### Common OpenAI Issues
+
+**Error: "OpenAI API key must be provided"**
+```bash
+# Solution:
+# 1. Check OPENAI_API_KEY in your .env file  
+# 2. Get your API key from https://platform.openai.com/api-keys
+# 3. Ensure you have sufficient OpenAI credits
+```
+
+### General Issues
+
+**Knowledge base initialization fails:**
+```bash
+# Solution:
+# 1. Restart the script completely (close terminal, reopen)
+# 2. Check both API keys are valid
+# 3. Verify internet connection
+# 4. Continue anyway - you can ingest documents later via /api/ingest
+```
+
+**Script shows old error messages:**
+```bash
+# Solution: Python module caching issue
+# 1. Close all Python processes completely
+# 2. Restart terminal/command prompt
+# 3. Run the script again
+```
 
 ## 📞 Support and Contact
 

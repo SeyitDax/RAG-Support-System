@@ -218,9 +218,9 @@ def main():
         print("")
         print("Common solutions:")
         print("1. Check if your Pinecone API key is correct")
-        print("2. For free tier users, try updating PINECONE_ENVIRONMENT in .env to:")
-        print("   PINECONE_ENVIRONMENT=gcp-starter")
-        print("3. You can try ingesting documents later via the /api/ingest endpoint")
+        print("2. Ensure you have a valid Pinecone free tier account")
+        print("3. Restart this script completely to reload the updated configuration")
+        print("4. You can try ingesting documents later via the /api/ingest endpoint")
         print("")
         input("Press Enter to continue anyway...")
     
