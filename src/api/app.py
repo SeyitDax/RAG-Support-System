@@ -60,11 +60,12 @@ def create_app(testing: bool = False) -> Flask:
     # Configure Flask settings
     configure_app(app, testing)
     
-    # Initialize CORS
+    # Initialize CORS (allow file:// URLs for demo interface)
     CORS(app, 
-         origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:8080"],
+         origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:8080", "null"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-         allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
+         allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
+         supports_credentials=False)
     
     # Initialize rate limiter with stable configuration
     limiter = Limiter(

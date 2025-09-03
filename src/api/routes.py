@@ -375,7 +375,7 @@ def ingest_documents():
 
 
 @api_bp.route('/analytics', methods=['GET'])
-@limiter.limit("20 per minute")
+# @limiter.limit("20 per minute")  # Temporarily disabled due to memory reference issue
 def get_analytics():
     """
     Get system analytics and metrics.
@@ -447,7 +447,7 @@ def get_analytics():
 
 
 @api_bp.route('/system/stats', methods=['GET'])
-@limiter.limit("10 per minute")
+# @limiter.limit("10 per minute")  # Temporarily disabled due to memory reference issue
 def get_system_stats():
     """
     Get system statistics and configuration.
