@@ -44,8 +44,20 @@ class RAGEngine:
             )
             logger.info("OpenAI connection successful")
         except Exception as e:
-            logger.error("OpenAI connection failed", error=str(e))
-            raise
+            error_msg = str(e)
+            logger.error("OpenAI connection failed", error=error_msg, model=config.openai.embedding_model)
+            
+            # Provide specific guidance based on error type
+            if "api key" in error_msg.lower() or "unauthorized" in error_msg.lower():
+                raise Exception(f"OpenAI Authentication Error: {error_msg}. Please check your OPENAI_API_KEY in .env file.")
+            elif "quota" in error_msg.lower() or "billing" in error_msg.lower():
+                raise Exception(f"OpenAI Billing Error: {error_msg}. Please check your OpenAI account billing at https://platform.openai.com/account/billing")
+            elif "rate" in error_msg.lower() or "limit" in error_msg.lower():
+                raise Exception(f"OpenAI Rate Limit Error: {error_msg}. Please wait a few minutes and try again.")
+            elif "connection" in error_msg.lower() or "network" in error_msg.lower():
+                raise Exception(f"OpenAI Connection Error: {error_msg}. Please check your internet connection and firewall settings.")
+            else:
+                raise Exception(f"OpenAI Error: {error_msg}")
     
     def ingest_documents(self, file_paths: List[str]) -> Dict[str, Any]:
         """

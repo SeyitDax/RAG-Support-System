@@ -40,17 +40,15 @@ class PineconeVectorStore:
             if self.index_name not in existing_indexes:
                 logger.info("Creating new Pinecone index", index_name=self.index_name)
                 
-                # Free tier only supports AWS us-east-1 region
+                # Free tier supports AWS us-east-1 region (official syntax for pinecone v5.x)
                 self.pc.create_index(
                     name=self.index_name,
-                    vector_type="dense",  # Required for 2024 API
                     dimension=self.dimension,
                     metric="cosine",
                     spec=ServerlessSpec(
                         cloud="aws",
-                        region="us-east-1"  # Only free tier supported region
-                    ),
-                    deletion_protection="disabled"  # Easier management for demos
+                        region="us-east-1"  # Free tier supported region
+                    )
                 )
                 
                 # Wait for index to be ready

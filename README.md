@@ -1,8 +1,8 @@
-# 🤖 RAG + n8n Customer Support Automation System
+# RAG + n8n Customer Support Automation System
 
 A production-ready AI-powered customer support system that automatically answers customer queries using RAG (Retrieval-Augmented Generation) with confidence-based routing to human agents.
 
-## 🎯 Project Overview
+## Project Overview
 
 **Business Objective**: Reduce customer response time by 75% and achieve 60% automation rate while maintaining high customer satisfaction through intelligent AI assistance with human escalation.
 
@@ -13,40 +13,40 @@ A production-ready AI-powered customer support system that automatically answers
 - **Automation**: n8n workflows for intelligent routing and notifications
 - **Frontend**: Professional HTML/CSS/JS demo interface
 
-## 📋 Key Features
+## Key Features
 
-### ✅ **Production RAG Engine**
+### **Production RAG Engine**
 - OpenAI GPT-4 integration for natural language responses
 - Pinecone vector database for scalable document retrieval
 - Advanced confidence scoring (similarity + consistency + relevance)
 - Intelligent chunking with metadata preservation
 - Source attribution for transparency
 
-### ✅ **Business Logic Automation**
-- **High confidence (>0.8)**: Automatic response ✅
-- **Medium confidence (0.6-0.8)**: Review required 🔍  
-- **Low confidence (<0.6)**: Escalate to human agent 👤
+### **Business Logic Automation**
+- **High confidence (>0.8)**: Automatic response
+- **Medium confidence (0.6-0.8)**: Review required  
+- **Low confidence (<0.6)**: Escalate to human agent
 - Conversation history tracking and analytics
 
-### ✅ **Comprehensive Knowledge Base**
-- 📋 **FAQ**: 30+ common customer questions and answers
-- 🔄 **Return Policy**: Complete return/exchange procedures
-- 📦 **Shipping Info**: Domestic/international shipping options
-- 📱 **Product Catalog**: Electronics, home goods, fashion, sports
+### **Comprehensive Knowledge Base**
+- **FAQ**: 30+ common customer questions and answers
+- **Return Policy**: Complete return/exchange procedures
+- **Shipping Info**: Domestic/international shipping options
+- **Product Catalog**: Electronics, home goods, fashion, sports
 
-### ✅ **Production API**
+### **Production API**
 - RESTful endpoints with full validation
 - Rate limiting and security measures  
 - Comprehensive error handling and logging
 - Real-time health monitoring and metrics
 
-### ✅ **Professional Demo Interface**
+### **Professional Demo Interface**
 - Real-time chat with confidence indicators
 - Source attribution display
 - Performance metrics visualization
 - Mobile-responsive design
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### Prerequisites
 - Python 3.8+
@@ -54,7 +54,7 @@ A production-ready AI-powered customer support system that automatically answers
 - **Pinecone API key** - Get from [app.pinecone.io](https://app.pinecone.io/) (free tier available)
 - Git
 
-### 🆓 **Pinecone Free Tier Setup**
+### **Pinecone Free Tier Setup**
 This system is optimized for Pinecone's free tier:
 
 **Free Tier Includes:**
@@ -68,9 +68,9 @@ This system is optimized for Pinecone's free tier:
 3. **Important**: Free tier only supports AWS us-east-1 region (automatically configured)
 
 **Common Issues:**
-- ❌ "Region not supported by free plan" → System is pre-configured for free tier
-- ❌ "Authentication failed" → Check your API key in .env file
-- ❌ "Quota exceeded" → Free tier allows 5 indexes max
+- "Region not supported by free plan" → System is pre-configured for free tier
+- "Authentication failed" → Check your API key in .env file
+- "Quota exceeded" → Free tier allows 5 indexes max
 
 ### 1. Clone and Setup
 ```bash
@@ -81,9 +81,16 @@ cd rag-support-system
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\\Scripts\\activate
 
-# Install dependencies
+# Install dependencies (includes official pinecone v5.3.0 package)
 pip install -r requirements.txt
 ```
+
+### **Important Package Update**
+This system now uses the **official `pinecone` package (v5.3.0)** instead of the deprecated `pinecone-client`. This ensures:
+- Latest features and bug fixes
+- Official support and documentation
+- Better free tier compatibility
+- Future-proof implementation
 
 ### 2. Environment Configuration
 ```bash
@@ -95,6 +102,26 @@ cp .env.example .env
 # PINECONE_API_KEY=your-pinecone-key-here
 # PINECONE_INDEX_NAME=rag-support-system
 ```
+
+### 3. **Test Your Setup (Recommended)**
+Before running the main demo, test your configuration:
+
+```bash
+# Test complete system (all components)
+python test_system.py
+
+# Test individual components (optional)
+python test_openai.py      # OpenAI connectivity only
+python test_pinecone.py    # Pinecone connectivity only
+```
+
+**Expected Output:**
+```
+ALL TESTS PASSED! The system should work correctly.
+You can now run: python run_demo.py
+```
+
+If any tests fail, they'll provide specific guidance on how to fix the issues.
 
 ### 3. Initialize Knowledge Base
 ```bash
@@ -123,7 +150,7 @@ flask run --host 0.0.0.0 --port 8000
 cd frontend && python -m http.server 8080
 ```
 
-## 🔧 API Endpoints
+## API Endpoints
 
 ### Core Endpoints
 - **POST** `/api/query` - Process customer questions with confidence scoring
@@ -164,7 +191,7 @@ curl -X POST http://localhost:8000/api/query \\
 }
 ```
 
-## 🎯 Performance Metrics
+## Performance Metrics
 
 ### Target Business KPIs
 - **Response Time Reduction**: 75% (5-10min → 1-2min)
@@ -178,7 +205,7 @@ curl -X POST http://localhost:8000/api/query \\
 - **System Uptime**: >99% availability
 - **API Cost Efficiency**: <$100/month for demo usage
 
-## 📊 System Architecture
+## System Architecture
 
 ```
 Customer Query → Flask API → RAG Engine → Confidence Analysis
@@ -190,7 +217,7 @@ Auto-Response (>0.8) OR Human Escalation (<0.6) → n8n Workflows
         PostgreSQL (Analytics) + Monitoring + Notifications
 ```
 
-## 🛠️ Development and Testing
+## Development and Testing
 
 ### Running Tests
 ```bash
@@ -218,7 +245,7 @@ isort src/ tests/
 
 ### Development Server
 ```bash
-## 🔌 n8n Integration
+## n8n Integration
 
 The system includes pre-configured n8n workflows for:
 
@@ -233,7 +260,7 @@ The system includes pre-configured n8n workflows for:
 3. Import workflows from `n8n-workflows/` directory
 4. Configure webhook URLs to point to your API endpoints
 
-## 📈 Analytics and Monitoring
+## Analytics and Monitoring
 
 ### Available Metrics
 - Total queries processed
@@ -248,7 +275,7 @@ The system includes pre-configured n8n workflows for:
 - `/api/system/stats` - Detailed system statistics  
 - `/api/analytics` - Historical performance data
 
-## 🔒 Security and Production
+## Security and Production
 
 ### Security Features
 - Input sanitization and validation
@@ -277,7 +304,7 @@ All configuration through environment variables:
 - Rate limiting settings
 - Business logic thresholds
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Workflow
 1. Fork the repository
@@ -295,7 +322,7 @@ All configuration through environment variables:
 - Unit test coverage >80%
 - Structured logging throughout
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Pinecone Issues
 
@@ -352,12 +379,12 @@ All configuration through environment variables:
 # 3. Run the script again
 ```
 
-## 📞 Support and Contact
+## Support and Contact
 
 ### Getting Help
-- 📖 **Documentation**: Check this README and inline code comments
-- 🐛 **Issues**: Open GitHub issues for bugs or feature requests
-- 💬 **Discussions**: Use GitHub Discussions for questions
+- **Documentation**: Check this README and inline code comments
+- **Issues**: Open GitHub issues for bugs or feature requests
+- **Discussions**: Use GitHub Discussions for questions
 
 ### Portfolio Context
 This project demonstrates:
@@ -369,10 +396,10 @@ This project demonstrates:
 
 **Target Market**: $35-50/hour AI Integration Specialist for enterprise customers needing intelligent customer support automation.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-**🎯 Ready for Upwork Portfolio**: This system demonstrates production-ready AI integration capabilities with clear business value, comprehensive documentation, and measurable performance targets that justify premium consulting rates.
+**Ready for Upwork Portfolio**: This system demonstrates production-ready AI integration capabilities with clear business value, comprehensive documentation, and measurable performance targets that justify premium consulting rates.
