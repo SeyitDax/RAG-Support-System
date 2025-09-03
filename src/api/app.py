@@ -66,11 +66,12 @@ def create_app(testing: bool = False) -> Flask:
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          allow_headers=["Content-Type", "Authorization", "X-Requested-With"])
     
-    # Initialize rate limiter
+    # Initialize rate limiter with stable configuration
     limiter = Limiter(
-        app,
+        app=app,
         key_func=get_remote_address,
-        default_limits=["1000 per hour", "100 per minute"]
+        default_limits=["1000 per hour", "100 per minute"],
+        storage_uri="memory://"  # Explicit in-memory storage
     )
     
     # Initialize RAG engine (skip in testing mode to avoid API calls)

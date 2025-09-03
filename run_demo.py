@@ -30,6 +30,10 @@ except ImportError as e:
 
 logger = structlog.get_logger(__name__)
 
+# Global state to prevent duplicate operations
+_browser_opened = False
+_kb_initialized = False
+
 def print_banner():
     """Print startup banner."""
     banner = """
@@ -81,6 +85,12 @@ def create_env_file_if_missing():
 
 def initialize_knowledge_base() -> bool:
     """Initialize the knowledge base with documents."""
+    global _kb_initialized
+    
+    if _kb_initialized:
+        print("Knowledge base already initialized, skipping...")
+        return True
+    
     print("Initializing knowledge base...")
     
     try:
@@ -94,6 +104,18 @@ def initialize_knowledge_base() -> bool:
         print("  Creating RAG engine...")
         rag_engine = RAGEngine()
         
+        # Check if knowledge base is already initialized
+        try:
+            stats = rag_engine.get_system_stats()
+            vector_count = stats.get("vector_store", {}).get("total_vectors", 0)
+            if vector_count > 0:
+                print(f"  [OK] Knowledge base already initialized with {vector_count} vectors")
+                _kb_initialized = True
+                return True
+        except Exception:
+            # If stats check fails, proceed with ingestion
+            pass
+        
         print("  Processing knowledge base documents...")
         result = rag_engine.ingest_directory(str(kb_path))
         
@@ -101,6 +123,7 @@ def initialize_knowledge_base() -> bool:
             total_chunks = result.get("total_chunks", 0)
             processing_time = result.get("processing_time", 0)
             print(f"  [OK] Successfully ingested {total_chunks} chunks in {processing_time:.2f}s")
+            _kb_initialized = True
             return True
         else:
             print(f"  [ERROR] Failed to ingest knowledge base: {result.get('message', 'Unknown error')}")
@@ -124,11 +147,12 @@ def start_api_server():
         print(f"  API endpoints available at http://{host}:{port}/api/")
         print(f"  Health check: http://{host}:{port}/api/health")
         
-        # Start server
+        # Start server in demo mode (disable debug to prevent double loading)
         app.run(
             host=host,
             port=port,
-            debug=config.flask.debug,
+            debug=False,           # Force debug off for stable demo
+            use_reloader=False,    # Disable auto-reload
             threaded=True
         )
         
@@ -138,6 +162,12 @@ def start_api_server():
 
 def open_demo_interface():
     """Open the demo interface in the browser."""
+    global _browser_opened
+    
+    if _browser_opened:
+        print("Demo interface already opened, skipping...")
+        return True
+    
     print("Opening demo interface...")
     
     frontend_path = Path("frontend/index.html")
@@ -149,10 +179,12 @@ def open_demo_interface():
         # Open in browser
         webbrowser.open(f"file://{frontend_path.absolute()}")
         print("  [OK] Demo interface opened in browser")
+        _browser_opened = True
         return True
     except Exception as e:
         print(f"  ⚠️  Could not auto-open browser: {e}")
         print(f"  Manually open: file://{frontend_path.absolute()}")
+        _browser_opened = True
         return True
 
 def print_usage_info():
@@ -193,6 +225,11 @@ To Stop: Press Ctrl+C
 
 def main():
     """Main demo startup sequence."""
+    # Check if we're in a Flask reloader subprocess
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        print("Detected Flask reloader restart - skipping initialization")
+        return
+    
     print_banner()
     
     # Check environment
