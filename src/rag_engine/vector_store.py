@@ -192,17 +192,29 @@ class PineconeVectorStore:
     
     def get_stats(self) -> Dict[str, Any]:
         """Get vector store statistics."""
+        # Default structure to return on failure
+        default_stats = {
+            "total_vectors": 0,
+            "dimension": self.dimension,
+            "index_fullness": 0.0,
+            "namespaces": {},
+            "status": "unavailable"
+        }
+        
         try:
             stats = self.index.describe_index_stats()
             return {
                 "total_vectors": stats.total_vector_count,
                 "dimension": stats.dimension,
                 "index_fullness": stats.index_fullness,
-                "namespaces": dict(stats.namespaces) if stats.namespaces else {}
+                "namespaces": dict(stats.namespaces) if stats.namespaces else {},
+                "status": "healthy"
             }
         except Exception as e:
             logger.error("Failed to get vector store stats", error=str(e))
-            return {}
+            # Return default structure with error info instead of empty dict
+            default_stats["error"] = str(e)
+            return default_stats
     
     def delete_by_filter(self, filter_dict: Dict[str, Any]) -> bool:
         """Delete vectors by metadata filter."""

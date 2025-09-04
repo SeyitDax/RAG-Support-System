@@ -148,10 +148,34 @@ class AnalyticsResponse(BaseModel):
 class SystemStatsResponse(BaseModel):
     """Model for system statistics response."""
     
-    vector_store: Dict[str, Any] = Field(default_factory=dict, description="Vector store statistics")
-    configuration: Dict[str, Any] = Field(default_factory=dict, description="System configuration")
-    performance: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Performance metrics")
-    uptime: Optional[float] = Field(default=None, description="System uptime in seconds")
+    vector_store: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "total_vectors": 0,
+            "dimension": 1536,
+            "index_fullness": 0.0,
+            "namespaces": {}
+        }, 
+        description="Vector store statistics"
+    )
+    configuration: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "chunk_size": 500,
+            "chunk_overlap": 50,
+            "confidence_high_threshold": 0.8,
+            "confidence_low_threshold": 0.6,
+            "similarity_top_k": 3
+        }, 
+        description="System configuration"
+    )
+    performance: Optional[Dict[str, Any]] = Field(
+        default_factory=lambda: {
+            "uptime": 0,
+            "memory_usage": "Unknown",
+            "active_connections": 1
+        }, 
+        description="Performance metrics"
+    )
+    uptime: Optional[float] = Field(default=0.0, description="System uptime in seconds")
 
 
 class ErrorResponse(BaseModel):

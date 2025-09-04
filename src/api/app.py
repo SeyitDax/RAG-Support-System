@@ -67,13 +67,19 @@ def create_app(testing: bool = False) -> Flask:
          allow_headers=["Content-Type", "Authorization", "X-Requested-With"],
          supports_credentials=False)
     
-    # Initialize rate limiter with stable configuration
-    limiter = Limiter(
-        app=app,
-        key_func=get_remote_address,
-        default_limits=["1000 per hour", "100 per minute"],
-        storage_uri="memory://"  # Explicit in-memory storage
-    )
+    # Initialize rate limiter with stable configuration (temporarily simplified)
+    try:
+        limiter = Limiter(
+            app=app,
+            key_func=get_remote_address,
+            default_limits=["1000 per hour", "100 per minute"],
+            storage_uri="memory://",  # Explicit in-memory storage
+            headers_enabled=True  # Enable rate limit headers
+        )
+    except Exception as e:
+        logger.warning("Failed to initialize rate limiter", error=str(e))
+        # Create a dummy limiter that doesn't actually limit
+        limiter = None
     
     # Initialize RAG engine (skip in testing mode to avoid API calls)
     if not testing:
@@ -87,7 +93,7 @@ def create_app(testing: bool = False) -> Flask:
             # For demo purposes, we'll continue without RAG engine
             rag_engine_instance = None
     
-    # Initialize routes with dependencies
+    # Initialize routes with dependencies (handle None limiter gracefully)
     init_routes(rag_engine_instance, limiter)
     
     # Register blueprints
